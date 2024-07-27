@@ -31,7 +31,9 @@ function Nav({ setMostrarPag }) {
         if (activeTab === 'Inicio'|| activeTab === 'Documentos'|| activeTab === 'Inventario') {
             setMostrarPag(activeTab);
             navigate(`${activeTab}`)
-        } else if (activeTab === 'Clientes') {
+        } 
+        // rutas clientes
+        else if (activeTab === 'Clientes') {
             setMostrarPag(activeClientesOption);
             if(activeClientesOption==='Listar Clientes'){
                 navigate('/clientes/ListarClientes');
@@ -46,11 +48,43 @@ function Nav({ setMostrarPag }) {
             }else if(activeClientesOption==='Solicitud de cuaderno catalogo'){
                 navigate('/clientes/SolicitudCuaderno');
             }
-            
+        // rutas Status de Atencion   
         } else if (activeTab === 'Status de atencion') {
             setMostrarPag(activeStatusOption);
+            if(activeStatusOption==='Contacto inicial'){
+                navigate('/status/Contacto');
+            }else if(activeStatusOption==='Ingr. Cotizacion Compina y Compipro'){
+                navigate('/status/Ingr');
+            }else if(activeStatusOption==='Retornar contacto'){
+                navigate('/status/Retornar');
+            }else if(activeStatusOption==='Ventas realizadas'){
+                navigate('/status/VentasR');
+            }else if(activeStatusOption==='Pendientes por cotizar'){
+                navigate('/status/Pendientes');
+            }else if(activeStatusOption==='Clientes cotizados'){
+                navigate('/status/Clientes');
+            }else if(activeStatusOption==='Ventas no realizadas'){
+                navigate('/status/VentasN');
+            }else if(activeStatusOption==='Producto entregados'){
+                navigate('/status/Producto');
+            }
         } else if (activeTab === 'Tipos de Clientes') {
             setMostrarPag(activeTiposOption)
+            if(activeTiposOption==='Clientes potenciales'){
+                navigate('/tipos/CPotenciales');
+            }else if(activeTiposOption==='Clientes ocacionales'){
+                navigate('/tipos/COcacionales');
+            }else if(activeTiposOption==='Clientes frecuentes'){
+                navigate('/tipos/CFrecuentes');
+            }else if(activeTiposOption==='Clientes tercerizados'){
+                navigate('/tipos/CTercerizados');
+            }else if(activeTiposOption==='Prospecto'){
+                navigate('/tipos/Prospecto');
+            }else if(activeTiposOption==='Clientes no potencial'){
+                navigate('/tipos/CNPotenciales');
+            }else if(activeTiposOption==='Malos clientes'){
+                navigate('/tipos/MClientes');
+            }
         } else if (activeTab === 'Provedores') {
             setMostrarPag(activeProvedoresOption)
         } else if (activeTab === 'Logistica') {
@@ -67,7 +101,7 @@ function Nav({ setMostrarPag }) {
     }, [activeTab, activeFormularioOption, activeProgramadoOption, activeUsuarioOption, activeAdministracionOption, activeTiposOption, activeProvedoresOption, activeLogisticaOption, activeClientesOption, activeStatusOption, setMostrarPag]);
 
     return (
-        <div className='rounded-r-lg bg-white w-full min-h-[100vh] px-2 pt-4'>
+        <nav className='rounded-r-lg bg-white w-full min-h-[100vh] px-2 pt-4'>
             <div className="flex items-center gap-2 mb-4">
                 <img className='w-[30px] h-[30px]' src="https://www.peruyello.com/img/pe/s/1651164664_82416.jpg" alt="" />
                 <h2 className='text-[#969696] font-bold text-[1.2em]'>COMPINA</h2>
@@ -564,7 +598,7 @@ function Nav({ setMostrarPag }) {
                 <i className={`fa-solid fa-border-all`}></i>
                 <h3 className={`font-semibold`}>Inventario</h3>
             </div>
-        </div>
+        </nav>
     );
 }
 
