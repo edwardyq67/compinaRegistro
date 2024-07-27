@@ -27,6 +27,30 @@ import CTercerizados from './componets/Tipos de clientes/CTercerizados'
 import Prospecto from './componets/Tipos de clientes/Prospecto'
 import CNPotentecial from './componets/Tipos de clientes/CNPotentecial'
 import MClientes from './componets/Tipos de clientes/MClientes'
+import Emitir from './componets/Provedores/Emitir'
+import Listar from './componets/Provedores/Listar'
+import OrdenCOMPINA from './componets/Provedores/OrdenCOMPINA'
+import OrdenCOMPIPRO from './componets/Provedores/OrdenCOMPIPRO'
+import ListarProvedores from './componets/Logistica/ListarProvedores'
+import Productos from './componets/Logistica/Productos'
+import RequerimientoCotizaciones from './componets/Logistica/RequerimientoCotizaciones'
+import Formato from './componets/Logistica/Formato'
+import Facturacion from './componets/administracion/Facturacion'
+import Cobranza from './componets/administracion/Cobranza'
+import Guia from './componets/administracion/Guia'
+import Cotizacion from './componets/administracion/Cotizacion'
+import Nuevo from './componets/usuarios/Nuevo'
+import ListarAsistencia from './componets/usuarios/ListarAsistencia'
+import Documentos from './componets/Documentos'
+import Inventario from './componets/Inventario'
+import EmailCompipro from './componets/programar/Email/EmailCompipro'
+import EmailCompina from './componets/programar/Email/EmailCompina'
+import EnviadosCompipro from './componets/programar/Enviados/EnviadosCompipro'
+import EnviadosCompina from './componets/programar/Enviados/EnviadosCompina'
+import ProgramadoCompipro from './componets/programar/Programados/ProgramadoCompipro'
+import ProgramadoCompina from './componets/programar/Programados/ProgramadoCompina'
+import ResmineFormulario from './componets/formulario resmine/ResmineFormulario'
+import ResmineListado from './componets/formulario resmine/ResmineListado'
 
 function App() {
   const [mostrarPag, setMostrarPag] = useState('Inicio')
@@ -40,11 +64,13 @@ function App() {
         </div>
         <div className="w-full pt-3 sm:mx-2 mx-1 lg:pl-0  ">
            <div className='w-[100%] p-2 rounded-md bg-white shadow-lg'>
-          <NavVertical mostrarPag={mostrarPag}/>
+          <NavVertical mostrarPag={mostrarPag} setMostrarPag={setMostrarPag}/>
         </div>
         <div className="w-full">
           <Routes>
             <Route path="/Inicio" element={<Inicio />} />
+            <Route path="/Documentos" element={<Documentos />} />
+            <Route path="/Inventario" element={<Inventario />} />
             {/* clientes */}
             <Route path="/clientes/ListarClientes" element={<ListarClientes />} />
             <Route path="/clientes/Requerimiento" element={<Requerimiento />} />
@@ -69,6 +95,35 @@ function App() {
             <Route path="/tipos/Prospecto" element={<Prospecto />} />
             <Route path="/tipos/CNPotenciales" element={<CNPotentecial />} />
             <Route path="/tipos/MClientes" element={<MClientes />} />
+            {/* Provedores */}
+            <Route path="/provedores/Listar" element={<Emitir />} />
+            <Route path="/provedores/Emitir" element={<Listar />} />
+            <Route path="/provedores/OrdenCOMPINA" element={<OrdenCOMPINA />} />
+            <Route path="/provedores/OrdenCOMPIPRO" element={<OrdenCOMPIPRO />} />
+            {/* Logistica */}
+            <Route path="/logistica/Listar" element={<ListarProvedores />} />
+            <Route path="/logistica/Emitir" element={<Productos />} />
+            <Route path="/logistica/OrdenCOMPINA" element={<RequerimientoCotizaciones />} />
+            <Route path="/logistica/OrdenCOMPIPRO" element={<Formato />} />
+            {/* administracion */}
+            <Route path="/administracion/facturacion" element={<Facturacion />} />
+            <Route path="/administracion/cobranza" element={<Cobranza />} />
+            <Route path="/administracion/guiaRemision" element={<Guia />} />
+            <Route path="/administracion/cotizacion" element={<Cotizacion />} />
+            {/* usuario */}
+            <Route path="/usuario/nuevo" element={<Nuevo />} />
+            <Route path="/usuario/listarUsuario" element={<ListarAsistencia />} />
+            <Route path="/usuario/listarAsistencia" element={<ListarAsistencia />} />
+            {/* Programar */}
+            <Route path="/programar/Email/Compipro" element={<EmailCompipro />} />
+            <Route path="/programar/Email/Compina" element={<EmailCompina />} />
+            <Route path="/programar/Enviados/Compipro" element={<EnviadosCompipro />} />
+            <Route path="/programar/Enviados/Compina" element={<EnviadosCompina />} />
+            <Route path="/programar/Programados/Compipro" element={<ProgramadoCompipro />} />
+            <Route path="/programar/Programados/Compina" element={<ProgramadoCompina />} />
+            {/* Formulario Resmine */}
+            <Route path="/FormularioResmine/Formulario" element={<ResmineFormulario />} />
+            <Route path="/FormularioResmine/Email/Listado" element={<ResmineListado />} />
           </Routes>
         </div>
         </div>

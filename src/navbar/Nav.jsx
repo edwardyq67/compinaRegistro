@@ -12,7 +12,6 @@ function Nav({ setMostrarPag }) {
     const [activeUsuarioOption, setActiveUsuarioOption] = useState('Nuevo');
     const [activeProgramadoOption, setActiveProgramadoOption] = useState('Enviar Email Compipro');
     const [activeFormularioOption, setActiveFormularioOption] = useState('Formulario');
-    const [valorNavigate,setValorNavigate] = useState('Inicio');
 
     const isActive = (tab) => activeTab === tab;
     const isActiveClientes = (option) => activeClientesOption === option;
@@ -68,7 +67,9 @@ function Nav({ setMostrarPag }) {
             }else if(activeStatusOption==='Producto entregados'){
                 navigate('/status/Producto');
             }
-        } else if (activeTab === 'Tipos de Clientes') {
+        }
+        // tipos de clientes
+        else if (activeTab === 'Tipos de Clientes') {
             setMostrarPag(activeTiposOption)
             if(activeTiposOption==='Clientes potenciales'){
                 navigate('/tipos/CPotenciales');
@@ -85,18 +86,82 @@ function Nav({ setMostrarPag }) {
             }else if(activeTiposOption==='Malos clientes'){
                 navigate('/tipos/MClientes');
             }
-        } else if (activeTab === 'Provedores') {
+        } 
+        // provedores
+        else if (activeTab === 'Provedores') {
             setMostrarPag(activeProvedoresOption)
-        } else if (activeTab === 'Logistica') {
+            if(activeProvedoresOption==='Listar provedores'){
+                navigate('/provedores/Listar');
+            }else if(activeProvedoresOption==='Emitir requerimiento'){
+                navigate('/provedores/Emitir');
+            }else if(activeProvedoresOption==='Orden de compra COMPINA'){
+                navigate('/provedores/OrdenCOMPINA');
+            }else if(activeProvedoresOption==='Orden de compra COMPIPRO'){
+                navigate('/provedores/OrdenCOMPIPRO');
+            }
+        } 
+        // logistica
+        else if (activeTab === 'Logistica') {
             setMostrarPag(activeLogisticaOption)
-        } else if (activeTab === 'Administracion') {
+            if(activeLogisticaOption==='Listar provedores'){
+                navigate('/logistica/Listar');
+            }else if(activeLogisticaOption==='Productos'){
+                navigate('/logistica/Emitir');
+            }else if(activeLogisticaOption==='Requerimiento cotizaciones'){
+                navigate('/logistica/OrdenCOMPINA');
+            }else if(activeLogisticaOption==='Formato'){
+                navigate('/logistica/OrdenCOMPIPRO');
+            }
+        } 
+        // administracion
+        else if (activeTab === 'Administracion') {
             setMostrarPag(activeAdministracionOption)
-        } else if (activeTab === 'Usuarios') {
+            if(activeAdministracionOption==='Facturacion'){
+                navigate('/administracion/facturacion');
+            }else if(activeAdministracionOption==='Guía remisión'){
+                navigate('/administracion/cobranza');
+            }else if(activeAdministracionOption==='Cobranza'){
+                navigate('/administracion/guiaRemision');
+            }else if(activeAdministracionOption==='Cotizacion/Publicidad Cliente'){
+                navigate('/administracion/cotizacion');
+            }
+        } 
+        // usuarios
+        else if (activeTab === 'Usuarios') {
             setMostrarPag(activeUsuarioOption)
-        } else if (activeTab === 'Programar') {
+            if(activeUsuarioOption==='Nuevo'){
+                navigate('/usuario/nuevo');
+            }else if(activeUsuarioOption==='Listar usuarios'){
+                navigate('/usuario/listarUsuario');
+            }else if(activeUsuarioOption==='Listar asistencia'){
+                navigate('/usuario/listarAsistencia');
+            }
+        }
+        // programar
+        else if (activeTab === 'Programar') {
             setMostrarPag(activeProgramadoOption)
-        } else if (activeTab === 'Formulario Resmine') {
+            if(activeProgramadoOption==='Enviar Email Compipro'){
+                navigate('/programar/Email/Compipro');
+            }else if(activeProgramadoOption==='Enviar Email Compina'){
+                navigate('/programar/Email/Compina');
+            }else if(activeProgramadoOption==='Status Enviados Compipro'){
+                navigate('/programar/Enviados/Compipro');
+            }else if(activeProgramadoOption==='Status Enviados Compina'){
+                navigate('/programar/Enviados/Compina');
+            }else if(activeProgramadoOption==='Status Programados Compipro'){
+                navigate('/programar/Programados/Compipro');
+            }else if(activeProgramadoOption==='Status Programados Compina'){
+                navigate('/programar/Programados/Compina');
+            }
+        } 
+        // formulario resmine
+        else if (activeTab === 'Formulario Resmine') {
             setMostrarPag(activeFormularioOption)
+            if(activeFormularioOption==='Formulario'){
+                navigate('/FormularioResmine/Formulario');
+            }else if(activeFormularioOption==='Listado'){
+                navigate('/FormularioResmine/Email/Listado');
+            }
         }
     }, [activeTab, activeFormularioOption, activeProgramadoOption, activeUsuarioOption, activeAdministracionOption, activeTiposOption, activeProvedoresOption, activeLogisticaOption, activeClientesOption, activeStatusOption, setMostrarPag]);
 
@@ -375,8 +440,8 @@ function Nav({ setMostrarPag }) {
             >
                 <div className="mb-2 ml-4">
                     <div
-                        onClick={() => setActiveLogisticaOption('Rutas')}
-                        className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveLogistica('Rutas') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
+                        onClick={() => setActiveLogisticaOption('Listar provedores')}
+                        className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveLogistica('activeLogisticaOption') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Listar provedores</h4>
