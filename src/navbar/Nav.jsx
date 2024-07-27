@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Nav({ setMostrarPag }) {
     const [activeTab, setActiveTab] = useState('Inicio');
@@ -11,6 +12,7 @@ function Nav({ setMostrarPag }) {
     const [activeUsuarioOption, setActiveUsuarioOption] = useState('Nuevo');
     const [activeProgramadoOption, setActiveProgramadoOption] = useState('Enviar Email Compipro');
     const [activeFormularioOption, setActiveFormularioOption] = useState('Formulario');
+    const [valorNavigate,setValorNavigate] = useState('Inicio');
 
     const isActive = (tab) => activeTab === tab;
     const isActiveClientes = (option) => activeClientesOption === option;
@@ -23,11 +25,28 @@ function Nav({ setMostrarPag }) {
     const isActiveProgramado = (option) => activeProgramadoOption === option;
     const isActiveFormulario = (option) => activeFormularioOption === option;
 
+    const navigate=useNavigate()
+
     useEffect(() => {
         if (activeTab === 'Inicio'|| activeTab === 'Documentos'|| activeTab === 'Inventario') {
             setMostrarPag(activeTab);
+            navigate(`${activeTab}`)
         } else if (activeTab === 'Clientes') {
             setMostrarPag(activeClientesOption);
+            if(activeClientesOption==='Listar Clientes'){
+                navigate('/clientes/ListarClientes');
+            }else if(activeClientesOption==='Requerimientos por atender'){
+                navigate('/clientes/Requerimiento');
+            }else if(activeClientesOption==='Cumpleaños / Aniversarios clientes'){
+                navigate('/clientes/CumpleañosAniversario');
+            }else if(activeClientesOption==='Reporte email'){
+                navigate('/clientes/ReporteEmail');
+            }else if(activeClientesOption==='Alertas'){
+                navigate('clientes/Alertas');
+            }else if(activeClientesOption==='Solicitud de cuaderno catalogo'){
+                navigate('/clientes/SolicitudCuaderno');
+            }
+            
         } else if (activeTab === 'Status de atencion') {
             setMostrarPag(activeStatusOption);
         } else if (activeTab === 'Tipos de Clientes') {
@@ -46,8 +65,9 @@ function Nav({ setMostrarPag }) {
             setMostrarPag(activeFormularioOption)
         }
     }, [activeTab, activeFormularioOption, activeProgramadoOption, activeUsuarioOption, activeAdministracionOption, activeTiposOption, activeProvedoresOption, activeLogisticaOption, activeClientesOption, activeStatusOption, setMostrarPag]);
+
     return (
-        <div className='rounded-r-lg bg-white w-full h-[100vh] px-2 pt-4'>
+        <div className='rounded-r-lg bg-white w-full min-h-[100vh] px-2 pt-4'>
             <div className="flex items-center gap-2 mb-4">
                 <img className='w-[30px] h-[30px]' src="https://www.peruyello.com/img/pe/s/1651164664_82416.jpg" alt="" />
                 <h2 className='text-[#969696] font-bold text-[1.2em]'>COMPINA</h2>
@@ -466,8 +486,8 @@ function Nav({ setMostrarPag }) {
                         <h4 className='text-[.9em] font-medium'>Compipro</h4>
                     </div>
                     <div
-                        onClick={() => setActiveProgramadoOption('Enviar Email Compipro Compina')}
-                        className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveProgramado('Enviar Email Compipro Compina') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
+                        onClick={() => setActiveProgramadoOption('Enviar Email Compina')}
+                        className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveProgramado('Enviar Email Compina') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Compina</h4>
