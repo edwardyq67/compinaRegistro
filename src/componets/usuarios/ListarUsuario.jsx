@@ -1,8 +1,11 @@
 import React from 'react'
 
 function ListarUsuario() {
+
   return (
-    <div>ListarUsuario</div>
+    <div className=''>
+ListarUsuario
+    </div>
   )
 }
 

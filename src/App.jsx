@@ -51,6 +51,7 @@ import ProgramadoCompipro from './componets/programar/Programados/ProgramadoComp
 import ProgramadoCompina from './componets/programar/Programados/ProgramadoCompina'
 import ResmineFormulario from './componets/formulario resmine/ResmineFormulario'
 import ResmineListado from './componets/formulario resmine/ResmineListado'
+import ListarUsuario from './componets/usuarios/ListarUsuario'
 
 function App() {
   const [mostrarPag, setMostrarPag] = useState('Inicio')
@@ -59,11 +60,11 @@ function App() {
     <HashRouter>
       {/* <Login/> */}
       <div className="flex bg-[#E9E9E9]">
-        <div className="hidden lg:grid  min-w-[300px]">
+        <div className="hidden lg:grid w-[16vw]">
           <Nav setMostrarPag={setMostrarPag}/>
         </div>
-        <div className="w-full pt-3 sm:mx-2 mx-1 lg:pl-0  ">
-           <div className='w-[100%] p-2 rounded-md bg-white shadow-lg'>
+        <div className="w-[98vw] lg:w-[83vw] pt-3 sm:mx-2 mx-1 lg:pl-0  ">
+           <div className=' p-2 mb-2 rounded-md bg-white shadow-lg'>
           <NavVertical mostrarPag={mostrarPag} setMostrarPag={setMostrarPag}/>
         </div>
         <div className="w-full">
@@ -112,7 +113,7 @@ function App() {
             <Route path="/administracion/cotizacion" element={<Cotizacion />} />
             {/* usuario */}
             <Route path="/usuario/nuevo" element={<Nuevo />} />
-            <Route path="/usuario/listarUsuario" element={<ListarAsistencia />} />
+            <Route path="/usuario/listarUsuario" element={<ListarUsuario />} />
             <Route path="/usuario/listarAsistencia" element={<ListarAsistencia />} />
             {/* Programar */}
             <Route path="/programar/Email/Compipro" element={<EmailCompipro />} />
