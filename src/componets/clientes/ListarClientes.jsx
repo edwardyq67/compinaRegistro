@@ -1,13 +1,56 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ejemploData from '../../ejemplo.json'
 function ListarClientes() {
   const [selectedValue, setSelectedValue] = useState('');
+  const [filterTiposDeClientes, setFilterTiposDeClientes] = useState('');
+  const [filterStatusAtencion, setFilterStatusAtencion] = useState('');
+  const [page, setPage] = useState(1);
+  const [fAtencion, setFAtencion] = useState(true);
+  const mesNumber = {
+    "Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4, "Mayo": 5, "Junio": 6,
+    "Julio": 7, "Agosto": 8, "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12
+  };
 
+  const paseDateStirng = (dataStr) => {
+    const [dia, mes] = dataStr.split(' de ')
+    const mesIndex = mesNumber[mes]
+    return new Date(`${new Date().getFullYear()}-${mesIndex}-${dia.padStart(2, '0')}`);
+  }
   // Función para manejar el cambio de selección
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
-  console.log(ejemploData.clientes.Listar_Clientes[0].Cargo)
+
+  const datos = ejemploData.clientes.Listar_Clientes
+    .filter(TipyCliente => filterTiposDeClientes === '' || TipyCliente.Tipos_Cliente.includes(filterTiposDeClientes))
+    .filter(statusAtencion => filterStatusAtencion === '' || statusAtencion.Status_atencion.includes(filterStatusAtencion))
+    .sort((a, b) => {
+      if (fAtencion) {
+        // Orden ascendente
+        const dateA = paseDateStirng(a.F_Atencion);
+        const dateB = paseDateStirng(b.F_Atencion);
+        return dateA - dateB;
+      } else {
+        // Orden descendente
+        const dateA = paseDateStirng(a.F_Atencion);
+        const dateB = paseDateStirng(b.F_Atencion);
+        return dateB - dateA;
+      }
+    });
+
+  const lidatos = 10;
+  const lastCharacterIndex = page * lidatos; //15;
+  const firstCharacterIndex = lastCharacterIndex - lidatos;
+  const charactersPaginated = datos.slice(
+    firstCharacterIndex,
+    lastCharacterIndex
+  );
+  const totalPgaginas = Math.ceil(datos.length / lidatos);
+  const pagNumber = [];
+  for (let i = 1; i <= totalPgaginas; i++) {
+    pagNumber.push(i);
+  }
+  console.log(charactersPaginated)
   return (
     <main className="">
       <div className="flex mb-2">
@@ -84,8 +127,8 @@ function ListarClientes() {
                       checked={selectedValue === 'option2'}
                       onChange={handleChange}
                     />
-                    <label htmlFor="default-radio-2" className="ms-2 text-sm font-medium text-gray-900 ">
-                      Fecha de atencion
+                    <label htmlFor="default-radio-2" className="ms-2 text-sm font-medium text-gray-900">
+                      Fecha de atención
                     </label>
                   </div>
                 </div>
@@ -101,7 +144,7 @@ function ListarClientes() {
                     </div>
                   </div>
                   <button className="flex justify-center items-center mx-auto ">
-                    <i className="bg-red-400 h-[50px] w-[50px] flex justify-center items-center rounded-md text-white text-[1.2em] cursor-pointer fa-solid fa-magnifying-glass"></i>
+                    <i className="bg-[#0087c8] h-[50px] w-[50px] flex justify-center items-center rounded-md text-white text-[1.2em] cursor-pointer fa-solid fa-magnifying-glass"></i>
                   </button>
 
                 </div>
@@ -136,7 +179,8 @@ function ListarClientes() {
         </form>
       </div>
       <div className=' overflow-hidden'>
-        <div className=" relative overflow-x-auto shadow-md sm:rounded-lg lg:max-w-[83vw]">
+        {/*  scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent */}
+        <div className=" relative overflow-x-auto shadow-md sm:rounded-lg lg:max-w-[83vw]" >
           <table className="w-full text-sm text-left rtl:text-right text-black overflow-y-auto ">
             <thead className="text-xs text-white uppercase bg-[#0087c8]">
               <tr>
@@ -151,11 +195,11 @@ function ListarClientes() {
                 <th scope="col" className="px-6 py-3">
                   <h4 className="text-center">Usuario</h4>
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-6 py-3" >
                   <h4 className="text-center">
                     <div className="flex items-center justify-center">
                       F.atencion
-                      <a href="#"><svg className="w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <a ><svg onClick={() => setFAtencion(!fAtencion)} className="cursor-pointer w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                       </svg></a>
                     </div>
@@ -171,17 +215,21 @@ function ListarClientes() {
                   <h4 className="text-center">Rubro</h4>
                 </th>
                 <th scope="col" className="px-6 py-3 flex items-center gap-1">
-                  <h4 className="text-center w-[100px]">tipos de Cliente</h4>
-                  <select id="countries" className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none ">
-                    <option selected>todos</option>
-                    <option value="0">Ninguno</option>
-                    <option value="1">Potenciales</option>
-                    <option value="2">Frecuentes</option>
-                    <option value="3">Ocasionales</option>
-                    <option value="4">Tercerizadores</option>
-                    <option value="5">Prospecto</option>
-                    <option value="6">No Potencial</option>
-                    <option value="7">Mal Cliente</option>
+                  <h4 className="text-center w-[100px]">Tipos de Cliente</h4>
+                  <select
+                    id="countries"
+                    className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none"
+                    onChange={(e) => setFilterTiposDeClientes(e.target.value)}
+                  >
+                    <option value="">Todos</option>
+                    <option value="Ninguno">Ninguno</option>
+                    <option value="Potenciales">Potenciales</option>
+                    <option value="Frecuentes">Frecuentes</option>
+                    <option value="Ocasionales">Ocasionales</option>
+                    <option value="Tercerizadores">Tercerizadores</option>
+                    <option value="Prospecto">Prospecto</option>
+                    <option value="No Potencial">No Potencial</option>
+                    <option value="Mal Cliente">Mal Cliente</option>
                   </select>
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -192,15 +240,19 @@ function ListarClientes() {
                 </th>
                 <th scope="col" className="px-6 py-3 flex items-center gap-1">
                   <h4 className="text-center w-[100px] ">Status Atencion</h4>
-                  <select id="countries" className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none ">
-                    <option selected>todos</option>
-                    <option value="In">Contacto Inicial</option>
-                    <option value="RC">Retomar Contacto</option>
-                    <option value="PC">Pendientes por Cotizar</option>
-                    <option value="C">Cotizado</option>
-                    <option value="VR">Venta Realizado</option>
-                    <option value="VNR">Venta No Realizado</option>
-                    <option value="PE">Prod. Entregado</option>
+                  <select
+                    id="countries"
+                    className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none "
+                    onChange={(e) => setFilterStatusAtencion(e.target.value)}
+                  >
+                    <option selected value="">todos</option>
+                    <option value="Contacto Inicial" >Contacto Inicial</option>
+                    <option value="Retomar Contacto" >Retomar Contacto</option>
+                    <option value="Pendientes por Cotizar" >Pendientes por Cotizar</option>
+                    <option value="Cotizado" >Cotizado</option>
+                    <option value="Venta Realizado" >Venta Realizado</option>
+                    <option value="Venta No Realizado" >Venta No Realizado</option>
+                    <option value="Prod. Entregado" >Prod. Entregado</option>
                   </select>
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -264,7 +316,7 @@ function ListarClientes() {
             </thead>
             <tbody>
               {
-                ejemploData.clientes.Listar_Clientes.map((cliente, index) => (
+                charactersPaginated.map((cliente, index) => (
                   <tr key={index} className="bg-white border-b divide-x">
                     <td className="px-4 py-2 text-center gap-1 grid">
                       <a href="#" className="font-medium py-1 text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
@@ -275,13 +327,13 @@ function ListarClientes() {
                       </a>
                     </td>
                     <th scope="row" className="px-4 py-2 text-center font-medium text-black whitespace-nowrap min-w-[80px]">
-                      {index + 1}
+                      {cliente.id}
                     </th>
                     <td className="px-4 py-2 text-center min-w-[150px]">
                       {cliente.Usuario || ' '}
                     </td>
                     <td className="px-4 py-2 text-center min-w-[150px]">
-                      {cliente.F_Atecncion || ' '}
+                      {cliente.F_Atencion || ' '}
                     </td>
                     <td className="px-4 py-2 text-center min-w-[150px]">
                       {cliente.Razon_Comercial || ' '}
@@ -370,7 +422,38 @@ function ListarClientes() {
         </div>
 
       </div>
-
+      <div className="flex mt-2 p-2 justify-center">
+        <nav aria-label="" className="flex justify-center">
+          <ul className="inline-flex -space-x-px text-[1.1em] ">
+            <li>
+              <a
+                onClick={() => setPage(1)}
+                className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 ms-0 leading-tight rounded-l-lg border-r-2 border-white bg-[#0087c8] text-white hover:bg-[#3381a8]"
+              >
+                <i className="fa-solid fa-angles-left"></i>
+              </a>
+            </li>
+            {pagNumber.map((number) => (
+              <li key={number}>
+                <a
+                  onClick={() => setPage(number)}
+                  className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 bg-[#0087c8] border-r-2 border-white  text-white hover:bg-[#3381a8]"
+                >
+                  {number}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                onClick={() => setPage(totalPgaginas)}
+                className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 leading-tight bg-[#0087c8] text-white hover:bg-[#3381a8] rounded-e-lg "
+              >
+                <i className="fa-solid fa-angles-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </main>
   )
 }
