@@ -2,7 +2,7 @@ import React from 'react'
 
 function ListarProvedores() {
   return (
-    <div>ListarProvedores</div>
+    <div>Noce que cosa es o para que sirve</div>
   )
 }
 

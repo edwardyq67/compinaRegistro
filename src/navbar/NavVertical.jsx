@@ -14,6 +14,8 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
     const [activeProgramadoOption, setActiveProgramadoOption] = useState('Enviar Email Compipro');
     const [activeFormularioOption, setActiveFormularioOption] = useState('Formulario');
 
+    const [user, setUser] = useState(false)
+
     const isActive = (tab) => activeTab === tab;
     const isActiveClientes = (option) => activeClientesOption === option;
     const isActiveStatus = (option) => activeStatusOption === option;
@@ -197,7 +199,7 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
                     <h2 className=' font-semibold text-[1.2em]'>{mostrarPag}</h2>
                 </div>
 
-                <div className="flex gap-1 min-w-[140px] ">
+                <div className="relative flex gap-1 min-w-[140px] ">
                     <div className="grid text-[.9em] text-[#969696]">
                         <h5 className=''>Juliana Alvares</h5>
                         <div className=" flex items-center justify-center gap-1">
@@ -205,7 +207,22 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
                             <h6 className=''>20:18:17</h6>
                         </div>
                     </div>
-                    <img className="w-10 h-10 rounded-full" src={avatar} alt="Rounded avatar"></img>
+                    <img onClick={() => setUser(!user)} className="cursor-pointer w-10 h-10 rounded-full" src={avatar} alt="Rounded avatar"></img>
+                    <div className= {`shadow-md bg-white w-full justify-center rounded top-[60px] py-2 gap-1 grid ${user?'absolute ':'hidden'}`}>
+                        <div className="cursor-pointer flex items-center gap-1">
+                            <i className="fa-solid fa-file-pen"></i>
+                            <h5>Tardanza</h5>
+                        </div>
+                        <div className="cursor-pointer flex items-center gap-1">
+                            <i className="fa-solid fa-burger"></i>
+                            <h5>Tardanza</h5>
+                        </div>
+                        <span className=" h-[.2px] bg-[#969696] "></span>
+                        <div className="cursor-pointer flex items-center gap-1">
+                            <i className="fa-solid fa-door-open"></i>
+                            <h5>Salir</h5>
+                        </div>
+                    </div>
                 </div>
             </div>
 

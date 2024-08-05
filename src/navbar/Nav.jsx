@@ -103,8 +103,8 @@ function Nav({ setMostrarPag }) {
         // logistica
         else if (activeTab === 'Logistica') {
             setMostrarPag(activeLogisticaOption)
-            if(activeLogisticaOption==='Listar provedores'){
-                navigate('/logistica/Listar');
+            if(activeLogisticaOption==='Rutas'){
+                navigate('/logistica/Rutas');
             }else if(activeLogisticaOption==='Productos'){
                 navigate('/logistica/Emitir');
             }else if(activeLogisticaOption==='Requerimiento cotizaciones'){
@@ -209,13 +209,14 @@ function Nav({ setMostrarPag }) {
                     >
                         <h4 className='text-[.9em] font-medium'>Requerimientos por atender</h4>
                     </div>
-                    <div
+                    {/* ya esta en filtrado */}
+                    {/* <div
                         onClick={() => setActiveClientesOption('Cumpleaños / Aniversarios clientes')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveClientes('Cumpleaños / Aniversarios clientes') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Cumpleaños /<br />Aniversarios clientes</h4>
-                    </div>
+                    </div> */} 
                     <div
                         onClick={() => setActiveClientesOption('Reporte email')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveClientes('Reporte email') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
@@ -223,31 +224,34 @@ function Nav({ setMostrarPag }) {
                     >
                         <h4 className='text-[.9em] font-medium'>Reporte email</h4>
                     </div>
-                    <div
+                    {/* noce lo que es */}
+                    {/* <div
                         onClick={() => setActiveClientesOption('Alertas')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveClientes('Alertas') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Alertas</h4>
-                    </div>
-                    <div
+                    </div> */}
+                    {/* creo que es en pdf */}
+                    {/* <div
                         onClick={() => setActiveClientesOption('Solicitud de cuaderno catalogo')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveClientes('Solicitud de cuaderno catalogo') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Solicitud de cuaderno <br />catalogo</h4>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* Status de atencion */}
-            <div
+            {/* ya esta en filtado de lista */}
+            {/* <div
                 onClick={() => setActiveTab('Status de atencion')}
                 className={`text-[1em] flex w-full rounded-md px-3 py-2 gap-2 cursor-pointer items-center mb-1 ${isActive('Status de atencion') ? 'bg-[#969696] text-white' : 'text-[#969696] bg-white hover:bg-[#969696] hover:text-white duration-150 transition-all'
                     }`}
             >
                 <i className={`fa-solid fa-tv`}></i>
                 <h3 className={`font-semibold`}>Status de Atencion</h3>
-            </div>
+            </div> */}
             {/* Status de atencion options */}
             <div
                 className={`overflow-hidden transition-all duration-300 ${isActive('Status de atencion') ? 'max-h-screen' : 'max-h-0'
@@ -314,14 +318,15 @@ function Nav({ setMostrarPag }) {
                 </div>
             </div>
             {/* tipos de clientes */}
-            <div
+            {/* ya esta en filtado de clientes */}
+            {/* <div
                 onClick={() => setActiveTab('Tipos de Clientes')}
                 className={`text-[1em] flex w-full rounded-md px-3 py-2 gap-2 cursor-pointer items-center mb-1 ${isActive('Tipos de clientes') ? 'bg-[#969696] text-white' : 'text-[#969696] bg-white hover:bg-[#969696] hover:text-white duration-150 transition-all'
                     }`}
             >
                 <i className={`fa-solid fa-address-book`}></i>
                 <h3 className={`font-semibold`}>Tipos de Clientes</h3>
-            </div>
+            </div> */}
             {/* tipos de clientes options */}
             <div
                 className={`overflow-hidden transition-all duration-300 ${isActive('Tipos de Clientes') ? 'max-h-screen' : 'max-h-0'
@@ -401,30 +406,34 @@ function Nav({ setMostrarPag }) {
                     >
                         <h4 className='text-[.9em] font-medium'>Listar provedores</h4>
                     </div>
-                    <div
+                    {/* no funciona */}
+                    {/* <div
                         onClick={() => setActiveProvedoresOption('Emitir requerimiento')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveProvedores('Emitir requerimiento') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Emitir requerimiento</h4>
-                    </div>
-                    <div
+                    </div> */}
+                    {/* necesito explicacion */}
+                    {/* <div
                         onClick={() => setActiveProvedoresOption('Orden de compra COMPINA')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveProvedores('Orden de compra COMPINA') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Orden de compra COMPINA</h4>
-                    </div>
-                    <div
+                    </div> */}
+                    {/* necesto explicacion */}
+                    {/* <div
                         onClick={() => setActiveProvedoresOption('Orden de compra COMPIPRO')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveProvedores('Orden de compra COMPIPRO') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
                         <h4 className='text-[.9em] font-medium'>Orden de compra COMPIPRO</h4>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* Logistica */}
+            {/* explicacion */}
             <div
                 onClick={() => setActiveTab('Logistica')}
                 className={`text-[1em] flex w-full rounded-md px-3 py-2 gap-2 cursor-pointer items-center mb-1 ${isActive('Logistica') ? 'bg-[#969696] text-white' : 'text-[#969696] bg-white hover:bg-[#969696] hover:text-white duration-150 transition-all'
@@ -440,11 +449,11 @@ function Nav({ setMostrarPag }) {
             >
                 <div className="mb-2 ml-4">
                     <div
-                        onClick={() => setActiveLogisticaOption('Listar provedores')}
+                        onClick={() => setActiveLogisticaOption('Rutas')}
                         className={`cursor-pointer w-full rounded-md px-2 py-1 mb-1 ${isActiveLogistica('activeLogisticaOption') ? 'bg-[#C3C3C3] text-white' : 'bg-white text-[#C3C3C3] hover:bg-[#C3C3C3] hover:text-white duration-150 transition-all'
                             }`}
                     >
-                        <h4 className='text-[.9em] font-medium'>Listar provedores</h4>
+                        <h4 className='text-[.9em] font-medium'>Rutas</h4>
                     </div>
                     <div
                         onClick={() => setActiveLogisticaOption('Productos')}
