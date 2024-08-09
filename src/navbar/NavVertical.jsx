@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import avatar from '../img/avatar.png'
 import { useNavigate } from 'react-router-dom';
-function NavVertical({ mostrarPag, setMostrarPag }) {
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+function NavVertical({ mostrarPag, setMostrarPag,setRutas }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('Inicio');
+    const [activeTab, setActiveTab] = useState('');
     const [activeClientesOption, setActiveClientesOption] = useState('Listar Clientes');
     const [activeStatusOption, setActiveStatusOption] = useState('Contacto inicial');
     const [activeTiposOption, setActiveTiposOption] = useState('Clientes potenciales');
@@ -15,6 +17,7 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
     const [activeFormularioOption, setActiveFormularioOption] = useState('Formulario');
 
     const [user, setUser] = useState(false)
+    const secion=useSelector(state=>state.secionSlice)
 
     const isActive = (tab) => activeTab === tab;
     const isActiveClientes = (option) => activeClientesOption === option;
@@ -29,7 +32,21 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
 
 
     const drawerRef = useRef();
-
+    const logaut = async () => {
+        try {
+          await axios.post("http://localhost:8080/user/cerrarSecion", {
+            "userId": secion.user.id
+          });
+        } catch (error) {
+          console.error("Error al cerrar sesión:", error);
+          // Opcional: Mostrar un mensaje al usuario sobre el error
+        } finally {
+          localStorage.removeItem("token"); // Elimina el token del localStorage
+          navigate("/Inicio");
+          setRutas("/");
+        }
+      };
+    
     const toggleDrawer = () => {
         setIsOpen(!isOpen);
     };
@@ -218,7 +235,7 @@ function NavVertical({ mostrarPag, setMostrarPag }) {
                             <h5>Tardanza</h5>
                         </div>
                         <span className=" h-[.2px] bg-[#969696] "></span>
-                        <div className="cursor-pointer flex items-center gap-1">
+                        <div onClick={()=>logaut()} className="cursor-pointer flex items-center gap-1">
                             <i className="fa-solid fa-door-open"></i>
                             <h5>Salir</h5>
                         </div>

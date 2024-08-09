@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Nav({ setMostrarPag }) {
-    const [activeTab, setActiveTab] = useState('Inicio');
+    const [activeTab, setActiveTab] = useState('');
     const [activeClientesOption, setActiveClientesOption] = useState('Listar Clientes');
     const [activeStatusOption, setActiveStatusOption] = useState('Contacto inicial');
     const [activeTiposOption, setActiveTiposOption] = useState('Clientes potenciales');

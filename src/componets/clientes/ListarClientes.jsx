@@ -1,64 +1,45 @@
 import React, { useEffect, useState } from 'react'
 import ejemploData from '../../ejemplo.json'
 import { useDispatch, useSelector } from 'react-redux';
-import { getClienteListarCliente } from '../../store/slices/clienteListarCliente';
+import { deleteClienteListarCliente, getClienteListarCliente } from '../../store/slices/clienteListarCliente';
 
-function ListarClientes({setAgregarClienteListarCliente,agregarClienteListarCliente}) {
+function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCliete, setAgregarClienteListarCliente }) {
   const dispatch = useDispatch();
-const [nRegistro,setNRegistro]=useState(10)
-const [idClientes,setIdCliente]=useState('')
-const[buscarPor,setBuscarPor]=useState('')
-const [busqueda,setBusqueda]=useState('');
-const[fAtencionDesde,setFAtencionDesde]=useState('')
-const [fAtencionHasta,setFAtencionHasta]=useState('')
+  const [nRegistro, setNRegistro] = useState(10)
+  const [idClientes, setIdCliente] = useState('')
+  const [buscarPor, setBuscarPor] = useState('')
+  const [busqueda, setBusqueda] = useState('');
+  const [loading, setLoading] = useState([])
+  const [fAtencionDesde, setFAtencionDesde] = useState('')
+  const [fAtencionHasta, setFAtencionHasta] = useState('')
   const [filterTiposDeClientes, setFilterTiposDeClientes] = useState('');
   const [filterStatusAtencion, setFilterStatusAtencion] = useState('');
   const [cumpleaños, setCumpleaños] = useState('');
   const [page, setPage] = useState(1);
   const [fAtencion, setFAtencion] = useState(true);
-  const mesNumber = {
-    "Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4, "Mayo": 5, "Junio": 6,
-    "Julio": 7, "Agosto": 8, "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12
-  };
 
-  const loading = useSelector((state) => state.clienteLitarCliente);
+  const estadoLoading = useSelector((state) => state.clienteLitarCliente);
 
-useEffect(()=>{
-dispatch(getClienteListarCliente())
-},[])
+  useEffect(() => {
+    dispatch(getClienteListarCliente());
+  }, [dispatch]);
 
-  const paseDateStirng = (dataStr) => {
-    const [dia, mes] = dataStr.split(' de ')
-    const mesIndex = mesNumber[mes]
-    return new Date(`${new Date().getFullYear()}-${mesIndex}-${dia.padStart(2, '0')}`);
-  }
+  // Actualiza localLoading solo si cambia el estado de carga
+  useEffect(() => {
+    if (loading !== estadoLoading) {
+      setLoading(estadoLoading);
+    }
+  }, [loading, estadoLoading]);
+
+
   // Función para manejar el cambio de selección
 
   const datos = loading
     .filter(TipyCliente => filterTiposDeClientes === '' || TipyCliente.Tipos_Cliente.includes(filterTiposDeClientes))
     .filter(statusAtencion => filterStatusAtencion === '' || statusAtencion.Status_atencion.includes(filterStatusAtencion))
-    .sort((a, b) => {
-      if (fAtencion) {
-        // Orden ascendente
-        const dateA = paseDateStirng(a.F_Atencion);
-        const dateB = paseDateStirng(b.F_Atencion);
-        return dateA - dateB;
-      } else {
-        // Orden descendente
-        const dateA = paseDateStirng(a.F_Atencion);
-        const dateB = paseDateStirng(b.F_Atencion);
-        return dateB - dateA;
-      }
-    })
     .filter(cumple => cumpleaños === '' || cumple.Cumpleaños.includes(cumpleaños))
-    .filter(idClien=>idClientes===''|| idClien.id === Number(idClientes))
+    .filter(idClien => idClientes === '' || idClien.id === Number(idClientes))
     .filter(buscar => busqueda === '' || buscar[buscarPor].toLowerCase().includes(busqueda.toLowerCase()))
-    .filter(cliente => {
-      const fechaAtencion = paseDateStirng(cliente.F_Atencion);
-      const desde = fAtencionDesde ? new Date(fAtencionDesde) : new Date('1970-01-01');
-      const hasta = fAtencionHasta ? new Date(fAtencionHasta) : new Date();
-  
-      return fechaAtencion >= desde && fechaAtencion <= hasta; });
     ;
 
 
@@ -78,27 +59,18 @@ dispatch(getClienteListarCliente())
   return (
     <main className="">
       <div className="flex mb-2 ">
-        <form className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y ">
-
+        <div className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y ">
           <div className="grid lg:flex gap-2 divide-x-0 lg:divide-x">
-            <div className=" grid grid-cols-2 gap-2">
-              <button onClick={()=>setAgregarClienteListarCliente(!agregarClienteListarCliente)} className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
+            <div className="flex items-center justify-center">
+              <button onClick={() => [setAgregarClienteListarCliente(true)]} className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
                 <i className="fa-solid fa-user-plus"></i>
                 <h3>Agragar Cliente</h3>
               </button>
-              <button className="flex 1 items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
-                <i className="fa-solid fa-trash-can"></i>
-                <h3 className='whitespace-nowrap' >Registro eliminados</h3>
-              </button>
-              <div className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
-                <i className="fa-solid fa-pen-to-square"></i>
-                <h3 className='whitespace-nowrap'>Actualizar Resultados</h3>
-              </div>
             </div>
-            <form className="pl-2 grid gap-2 justify-end mx-auto">
+            <form className="pl-2 grid sm:flex lg:grid gap-2 justify-end mx-auto">
               <div className="flex gap-2 items-center justify-start">
                 <label htmlFor="" className='font-medium text-sm w-[80px]'>Buscar por: </label>
-                <select id="countries" onChange={(e)=>setBuscarPor(e.target.value)}  className=" py-1 w-[74%] bg-white border border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none ">
+                <select id="countries" onChange={(e) => setBuscarPor(e.target.value)} className=" py-1 w-[74%] bg-white border border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none ">
                   <option selected>todos</option>
                   <option value="Razon_Comercial">Razon Comercial</option>
                   <option value="Razon_Social">Razon Social</option>
@@ -122,7 +94,7 @@ dispatch(getClienteListarCliente())
                   <input
                     id="registro-1"
                     type="text"
-                    onChange={e=>setBusqueda(e.target.value)}
+                    onChange={e => setBusqueda(e.target.value)}
                     className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
                   />
                   <i className="cursor-pointer fa-solid fa-magnifying-glass absolute right-2 text-gray-500"></i>
@@ -130,7 +102,7 @@ dispatch(getClienteListarCliente())
               </div>
             </form>
             <form action="">
-              <div className="py-1 px-2 sm:flex grid gap-2 ">
+              <div className="py-1 px-2 sm:flex grid gap-2 justify-around">
                 <div className="flex justify-around sm:grid gap-2">
                   <div className="flex items-center ">
                     <input
@@ -158,68 +130,67 @@ dispatch(getClienteListarCliente())
                     </label>
                   </div>
                 </div>
-                  <div className="grid gap-1 ml-2">
-                    <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
-                      <label htmlFor="registro-1" className="font-medium text-sm">Desde: </label>
-                      <input
-                      onChange={e=>setFAtencionDesde(e.target.value)}
-                        id="registro-1"
-                        type="date"
-                        className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
-                      />
-                    </div>
-                    <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
-                      <label htmlFor="registro-1" className="font-medium text-sm">Hasta: </label>
-                      <input
-                      onChange={e=>setFAtencionHasta(e.target.value)}
-                        id="registro-1"
-                        type="date"
-                        className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
-                      />
-                    </div>
+                <div className="grid gap-1 ml-2">
+                  <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
+                    <label htmlFor="registro-1" className="font-medium text-sm">Desde: </label>
+                    <input
+                      onChange={e => setFAtencionDesde(e.target.value)}
+                      id="registro-1"
+                      type="date"
+                      className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
+                    />
                   </div>
-
+                  <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
+                    <label htmlFor="registro-1" className="font-medium text-sm">Hasta: </label>
+                    <input
+                      onChange={e => setFAtencionHasta(e.target.value)}
+                      id="registro-1"
+                      type="date"
+                      className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
+                    />
+                  </div>
+                </div>
               </div>
             </form>
 
           </div>
 
-          <div className="grid grid-cols-6 pt-2 gap-4">
-   
-            <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
+          <form className="grid md:flex justify-evenly pt-2 gap-4">
+
+            <div className="flex gap-2 items-center justify-center ">
               <label htmlFor="registro-1" className="font-medium text-sm">N° Registro</label>
               {/* <div className="relative flex items-center"> */}
-                    <input
+              <input
                 id="registro-1"
                 type="number"
                 min={1}
                 value={nRegistro}
-                
-                onChange={e=>setNRegistro(e.target.value)}
+
+                onChange={e => setNRegistro(e.target.value)}
                 className="py-1 select-none bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
               />
               {/* <div className="absolute w-[90%] left-0  bg-transparent h-full">
 
               </div> */}
               {/* </div> */}
-          
+
             </div>
-            <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 items-center justify-center gap-2 lg:justify-end">
+            <div className="flex tems-center justify-center gap-2 lg:justify-end">
               <label htmlFor="registro-2" className="font-medium text-sm">ID del Cliente</label>
               <input
                 id="registro-2"
                 type="number"
-                onChange={e=>setIdCliente(e.target.value)}
+                onChange={e => setIdCliente(e.target.value)}
                 className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
               />
             </div>
-            <div className="flex col-span-6 lg:col-span-2 items-center justify-center">
+            <div className="flex justify-center items-center">
               <label className="font-medium text-sm">
                 <i className="text-yellow-400 fa-solid fa-triangle-exclamation"></i> Actualmente hay <span className="text-[#0087c8]">{loading.length} cliente</span>
               </label>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
       <div className=' overflow-hidden'>
         {/*  scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent */}
@@ -278,9 +249,6 @@ dispatch(getClienteListarCliente())
                 <th scope="col" className="px-6 py-3">
                   <h4 className="text-center w-[200px]">Origen</h4>
                 </th>
-                <th scope="col" className="px-6 py-3 ">
-                  <h4 className="text-center w-[200px] mx-auto">Status</h4>
-                </th>
                 <th scope="col" className="px-6 py-3 flex items-center gap-1">
                   <h4 className="text-center whitespace-nowrap ">Status Atencion</h4>
                   <select
@@ -297,12 +265,6 @@ dispatch(getClienteListarCliente())
                     <option value="Venta No Realizado" >Venta No Realizado</option>
                     <option value="Prod. Entregado" >Prod. Entregado</option>
                   </select>
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <h4 className="text-center whitespace-nowrap">Nombre</h4>
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <h4 className="text-center ">Apellido</h4>
                 </th>
                 <th scope="col" className="px-6 py-3">
                   <h4 className="text-center ">Cargo</h4>
@@ -381,12 +343,16 @@ dispatch(getClienteListarCliente())
                 charactersPaginated.map((cliente, index) => (
                   <tr key={index} className="bg-white border-b divide-x ">
                     <td className="px-4 py-2 text-center gap-1 flex mt-1">
-                      <button  className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
+                      <button onClick={() => [setidClienteListarCliete(cliente.id), setidActivarClienteListarCliete(true)]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
                         <i className="fa-solid fa-pen-to-square"></i>Edit
                       </button>
-                      <button className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#cc2630] rounded flex justify-center items-center gap-1">
-                        <i className="fa-solid fa-lock"></i>Proteger
+                      <button className="px-2 font-medium py-1 whitespace-nowrap text-white bg-black rounded flex justify-center items-center gap-1">
+                        <i className="fa-solid fa-shield-halved"></i>Proteger
                       </button>
+                      <button onClick={() => [dispatch(deleteClienteListarCliente(cliente.id))]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#cc2630] rounded flex justify-center items-center gap-1">
+                        <i className="fa-solid fa-trash-can"></i>Eliminar
+                      </button>
+
                     </td>
                     <th scope="row" className="px-4 py-2 text-center font-medium text-black whitespace-nowrap ">
                       {cliente.id}
@@ -395,7 +361,7 @@ dispatch(getClienteListarCliente())
                       {cliente.Usuario || ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.F_Atencion || ' '}
+                      {cliente.updatedAt ? new Date(cliente.updatedAt).toLocaleDateString() : ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
                       {cliente.Razon_Comercial || ' '}
@@ -413,16 +379,7 @@ dispatch(getClienteListarCliente())
                       {cliente.Origen || ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.Status || ' '}
-                    </td>
-                    <td className="px-4 py-2 text-center whitespace-nowrap">
                       {cliente.Status_atencion || ' '}
-                    </td>
-                    <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.Nombre || ' '}
-                    </td>
-                    <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.Apellido || ' '}
                     </td>
                     <td className="px-4 whitespace-nowrap  py-2 text-center">
                       {cliente.Cargo || ' '}
@@ -452,7 +409,7 @@ dispatch(getClienteListarCliente())
                       {cliente.Web || ' '}
                     </td>
                     <td className="px-4 whitespace-nowrap  py-2 text-center">
-                      {cliente.Direccion || ' '}
+                      {cliente.Dirección || ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap ">
                       {cliente.Obs_Direccion_Empresa || ' '}
@@ -467,10 +424,10 @@ dispatch(getClienteListarCliente())
                       {cliente.Ciudad || ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.Cumpleaños || ' '}
+                      {cliente.Cumpleaños ? new Date(cliente.Cumpleaños).toLocaleDateString() : ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
-                      {cliente.Aniversario || ' '}
+                      {cliente.Aniversario ? new Date(cliente.Aniversario).toLocaleDateString() : ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
                       {cliente.Skype || ' '}
