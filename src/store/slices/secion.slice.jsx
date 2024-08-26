@@ -12,11 +12,23 @@ export const secionSlice = createSlice({
         }
     }
 })
-export const postThungSecion = (data) => async(dispatch) => {
+export const getThungSecion = () => async (dispatch) => {
     dispatch(setIsLoading(true));
-    return axios.post(`http://localhost:8080/user/login`, data)
+    try {
+        dispatch(setsecion([])); 
+    } catch (error) {
+        console.error('Error:', error);
+        dispatch(setsecion([])); // Asegura que en caso de error, la sección esté vacía.
+    } finally {
+        dispatch(setIsLoading(false)); // Detiene la indicación de carga.
+    }
+};
+export const postThungSecion = (date) => async(dispatch) => {
+    dispatch(setIsLoading(true));
+    return axios.post(`https://backendcompina.onrender.com/user/login`, date)
         .then((res) => {dispatch(setsecion(res.data))
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("id", res.data.user.id);
         })
         .finally(() => dispatch(setIsLoading(false)));
 }

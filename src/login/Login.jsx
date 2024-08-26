@@ -1,35 +1,92 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import avatar from '../img/avatar.png'
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { postThungSecion } from '../store/slices/secion.slice';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getThungSecion, postThungSecion } from '../store/slices/secion.slice';
+import { postAsitenciaThunk } from '../store/slices/asistencia';
+import { getidThungSecion } from '../store/slices/idseccionUser.slice';
+import getIdConfig from '../utils/getIdConfig';
 
 function Login({ ruta, setRutas }) {
+
+    Login.defaultProps = {
+        ruta: '/',
+        setRutas: () => {},
+      };
     const [passwordVisible, setPasswordVisible] = useState(false);
-const dispatch = useDispatch()
+    const [seccion,setSecion] =useState([])
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const { register, handleSubmit } = useForm();
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
+  
+    useEffect(()=>{
+        setRutas("/")
+        dispatch(getThungSecion())
+    },[])
+
+
+    const submit = async (e) => {
+        await axios.post('https://backendcompina.onrender.com/user/login', e)
+        .then(async(res) => {await setSecion(res.data)
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("id", res.data.user.id);
+        })
+        .catch((err) => alert("usuario no encontrado")); 
     
-    const submit = async (data) => {
-        try {
-            await dispatch(postThungSecion(data));
-            setRutas("/Inicio");
+
+    };
+useEffect(()=>{
+    const verificarAsistencia = async () => {
+        // Asegúrate de que `seccion`, `seccion.user`, y `seccion.user.asistencia` existen antes de acceder a ellas
+        if (seccion?.user?.asistencia?.length) {
+            const fechaHoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+            const ultimaEntrada = seccion.user.asistencia[seccion.user.asistencia.length - 1].fecha;
+            const ultimaEntradaFecha = new Date(ultimaEntrada).toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            if (ultimaEntradaFecha === fechaHoy) {
+                localStorage.setItem('miArreglo', JSON.stringify(seccion));
+                setRutas('/Inicio');
+                navigate("/Inicio");
+            } else {
+                const horario = {
+                    fecha: new Date(),
+                    horarioInicio: new Date(),
+                    horarioSalida: ""
+                };
+
+                await dispatch(postAsitenciaThunk(horario));
+                const authorization = getIdConfig().headers.Authorization;
+                await dispatch(getidThungSecion(authorization));
+                await localStorage.setItem('miArreglo', JSON.stringify(seccion));
+                setRutas('/Inicio');
+                navigate("/Inicio");
+            }
+        } else if (seccion?.user?.asistencia?.length === 0 || !seccion.user.asistencia?.[seccion.user.asistencia.length - 1]?.fecha) {
+            const horario = {
+                fecha: new Date(),
+                horarioInicio: new Date(),
+                horarioSalida: ""
+            };
+
+            await dispatch(postAsitenciaThunk(horario));
+            const authorization = getIdConfig().headers.Authorization;
+            await dispatch(getidThungSecion(authorization));
+            await localStorage.setItem('miArreglo', JSON.stringify(seccion));
+            setRutas('/Inicio');
             navigate("/Inicio");
-        } catch (error) {
-            console.error("Error durante el inicio de sesión:", error);
-            alert("Hubo un error al iniciar sesión. Por favor, inténtelo de nuevo.");
         }
     };
 
+    verificarAsistencia();
+},[submit])
     return (
-        <form onSubmit={handleSubmit(submit)} className={`${ruta != '/' ? 'hidden' : "flex bg-gradient-to-r from-color1 to-color2 w-[100vw] h-[100vh] justify-center items-center"}`}>
+        <form onSubmit={handleSubmit(submit)} className={`${ruta == '/Login' ? 'hidden' : "flex bg-gradient-to-r from-color1 to-color2 w-[100vw] h-[100vh] justify-center items-center"}`}>
             <div className="gap-x-10 gap-y-5 justify-center max-w-[50vw] px-10 py-14 bg-white rounded-md border border-black relative grid grid-cols-2">
                 <div className="absolute inset-x-0 top-[-50px] flex justify-center">
                     <img className=' w-[100px] h-[100px]' src={avatar} alt="Avatar" />

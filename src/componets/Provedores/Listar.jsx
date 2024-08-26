@@ -1,46 +1,41 @@
 import React, { useEffect, useState } from 'react'
-import ejemploData from '../../ejemplo.json'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteThungProvedores, getThungProvedores } from '../../store/slices/provedores.slice'
 
-function Listar() {
-  const [selectedValue, setSelectedValue] = useState('');
-  const [filterTiposDeClientes, setFilterTiposDeClientes] = useState('');
-  const [filterStatusAtencion, setFilterStatusAtencion] = useState('');
-  const [cumpleaños, setCumpleaños] = useState('');
+function Listar({ serIdEdicion, setPost,setIdPut }) {
+  const [nRegistro, setNRegistro] = useState(10)
+  const [idClientes, setIdCliente] = useState('')
+  const [buscarPor, setBuscarPor] = useState('')
+  const [busqueda, setBusqueda] = useState('');
+  const [fAtencionDesde, setFAtencionDesde] = useState('')
+  const [fAtencionHasta, setFAtencionHasta] = useState('')
+  const [fecha, setFecha] = useState('F_creacion');
   const [page, setPage] = useState(1);
-  const [fAtencion, setFAtencion] = useState(true);
-  const mesNumber = {
-    "Enero": 1, "Febrero": 2, "Marzo": 3, "Abril": 4, "Mayo": 5, "Junio": 6,
-    "Julio": 7, "Agosto": 8, "Septiembre": 9, "Octubre": 10, "Noviembre": 11, "Diciembre": 12
-  };
+  const dispatch = useDispatch();
 
-  // const paseDateStirng = (dataStr) => {
-  //   const [dia, mes] = dataStr.split(' de ')
-  //   const mesIndex = mesNumber[mes]
-  //   return new Date(`${new Date().getFullYear()}-${mesIndex}-${dia.padStart(2, '0')}`);
-  // }
-  // Función para manejar el cambio de selección
-  const handleChange = (event) => {
-    setSelectedValue(event.target.value);
-  };
+  const provedoresValor = useSelector(state => state.provedoresSlice)
+  useEffect(() => {
+    dispatch(getThungProvedores())
+  }, [])
+  const datos = provedoresValor
+    .filter(idClien => idClientes === '' || idClien.id === Number(idClientes))
+    .filter(buscar => busqueda === '' || buscar[buscarPor].toLowerCase().includes(busqueda.toLowerCase()))
+    .filter(usuario => {
+      if (fAtencionDesde === '' && fAtencionHasta === '') return true;
 
-  const datos = ejemploData.provedores.Listar_provedores
-    .filter(TipyCliente => filterTiposDeClientes === '' || TipyCliente.Prioridad.includes(filterTiposDeClientes))
-    // .sort((a, b) => {
-    //   if (fAtencion) {
-    //     // Orden ascendente
-    //     const dateA = paseDateStirng(a.F_Atencion);
-    //     const dateB = paseDateStirng(b.F_Atencion);
-    //     return dateA - dateB;
-    //   } else {
-    //     // Orden descendente
-    //     const dateA = paseDateStirng(a.F_Atencion);
-    //     const dateB = paseDateStirng(b.F_Atencion);
-    //     return dateB - dateA;
-    //   }
-    // })
-    .filter(cumple => cumpleaños === '' || cumple.Cumpleaños.includes(cumpleaños));
+      let fechaCreacionUsuario;
 
-  const lidatos = 10;
+      if (fecha === 'F_creacion') {
+        fechaCreacionUsuario = new Date(usuario.createdAt); // Asegúrate de que "Usuario.F_aviso" existe
+      }
+
+      const inicio = fAtencionDesde !== '' ? new Date(fAtencionDesde) : new Date(fAtencionDesde); // Fecha muy antigua por defecto
+      const fin = fAtencionHasta !== '' ? new Date(fAtencionHasta) : new Date(fAtencionHasta); // Fecha muy futura por defecto
+
+      return fechaCreacionUsuario >= inicio && fechaCreacionUsuario <= fin;
+    });
+
+  const lidatos = nRegistro;
   const lastCharacterIndex = page * lidatos; //15;
   const firstCharacterIndex = lastCharacterIndex - lidatos;
   const charactersPaginated = datos.slice(
@@ -52,416 +47,332 @@ function Listar() {
   for (let i = 1; i <= totalPgaginas; i++) {
     pagNumber.push(i);
   }
+
   return (
     <main className="">
-    <div className="flex mb-2">
-      <form className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y">
-        <div className="grid lg:flex gap-2">
-          <div className="grid md:flex gap-2">
-            <div className="col-span-4 md:col-span-2 lg:col-span-1 grid grid-cols-2 gap-2">
-              <button className="flex col-span-1 items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
+      <div className="flex mb-2 ">
+        <section className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y ">
+          <section className="grid lg:flex gap-2 divide-x-0 lg:divide-x">
+            <div className="flex items-center justify-center">
+              <button onClick={() => setPost('agregarProvedores')} className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
                 <i className="fa-solid fa-user-plus"></i>
-                <h3>Agragar Cliente</h3>
+                <h3>Agragar Usuario</h3>
               </button>
-              <button className="flex col-span-1 items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
-                <i className="fa-solid fa-trash-can"></i>
-                <h3>Registro eliminados</h3>
-              </button>
-              <div className="flex col-span-1 items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
-                <i className="fa-solid fa-pen-to-square"></i>
-                <h3 className=''>Actualizar Resultados</h3>
-              </div>
             </div>
-            <div className="col-span-4 md:col-span-2 lg:col-span-1 grid gap-2 justify-end mx-auto">
-
+            <form className="pl-2 grid sm:flex lg:grid gap-2 justify-end mx-auto">
               <div className="flex gap-2 items-center justify-start">
                 <label htmlFor="" className='font-medium text-sm w-[80px]'>Buscar por: </label>
-                <select id="countries" className=" py-1 w-[74%] bg-white border border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none ">
+                <select id="countries" onChange={(e) => setBuscarPor(e.target.value)} className=" py-1 w-[74%] bg-white border border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none ">
                   <option selected>todos</option>
-                  <option value="c.empresa">Empresa</option>
-                  <option value="c.razon">Razon Social</option>
-                  <option value="c.nombres">Nombres</option>
-                  <option value="c.apellidos">Apellidos</option>
-                  <option value="u.usuario">Usuarios</option>
-                  <option value="c.rubro">Rubro</option>
-                  <option value="c.ruc">RUC</option>
-                  <option value="c.telefono">Teléfono</option>
-                  <option value="c.celular">Celular</option>
-                  <option value="c.fatencion">Fecha de Atencion</option>
-                  <option value="c.direccion">Direccion Cliente</option>
-                  <option value="c.direccion2">Direccion Empresa</option>
-                  <option value="groupemail.tcvc_email">Emails</option>
-                  <option value="c.web">Web</option>
+                  <option value="Usuario">Usuario</option>
+                  <option value="Empresa">Empresa</option>
+                  <option value="Rubro">Rubro</option>
+                  <option value="Prioridad">Prioridad</option>
+                  <option value="Cargo">Cargo</option>
+                  <option value="Telefono">Telefono</option>
+                  <option value="Ruc">Ruc</option>
+                  <option value="RPM">RPM</option>
+                  <option value="RPC">RPC</option>
+                  <option value="Web">Web</option>
+                  <option value="Direccion_Empresa">Correo</option>
+                  <option value="createdAt">createdAt</option>
+                  <option value="usuario">Usuario</option>
+                  <option value="correo">Correo</option>
+                  <option value="createdAt">createdAt</option>
                 </select>
               </div>
               <div className="flex gap-2 items-center justify-start">
-                <label htmlFor="" className='font-medium text-sm'>Datos de Busqueda:  </label>
-                <input type="text" className=" py-1 bg-white border  border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none" />
-              </div>
-            </div>
-          </div>
-
-          <div className="col-span-4 lg:col-span-2 flex md:mx-auto mx-0">
-            <div className="grid  grid-cols-3 border border-[#969696]  rounded-md px-2 py-1 divide-x-none md:divide-x gap-1 shadow-md md:w-auto w-full">
-              <div className="grid p-1 col-span-4 md:col-span-1">
-                <div className="flex items-center mb-4">
+                <label htmlFor="" className='font-medium text-sm'>Busqueda:  </label>
+                <div className="relative flex items-center">
                   <input
-                    id="default-radio-1"
-                    type="radio"
-                    value="option1"
-                    name="default-radio"
-                    className="w-4 h-4 text-blue-600 focus:outline-none"
-                    checked={selectedValue === 'option1'}
-                    onChange={handleChange}
+                    id="registro-1"
+                    type="text"
+                    onChange={e => setBusqueda(e.target.value)}
+                    className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
                   />
-                  <label htmlFor="default-radio-1" className="ms-2 text-sm font-medium text-gray-900">
-                    Fecha de aviso
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    id="default-radio-2"
-                    type="radio"
-                    value="option2"
-                    name="default-radio"
-                    className="w-4 h-4 text-blue-600 focus:outline-none"
-                    checked={selectedValue === 'option2'}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor="default-radio-2" className="ms-2 text-sm font-medium text-gray-900">
-                    Fecha de atención
-                  </label>
+                  <i className="cursor-pointer fa-solid fa-magnifying-glass absolute right-2 text-gray-500"></i>
                 </div>
               </div>
-              <div className="flex pl-2 gap-2 col-span-4 md:col-span-2">
-                <div className="grid justify-end gap-1">
-                  <div className="flex gap-2 items-center justify-end">
-                    <label htmlFor="" className='font-medium text-sm'>Desde:  </label>
-                    <input type="text" className=" py-1 bg-white border  border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none" />
-                  </div>
-                  <div className="flex gap-2 items-center justify-end">
-                    <label htmlFor="" className='font-medium text-sm'>Hasta:  </label>
-                    <input type="text" className=" py-1 bg-white border  border-[#969696] text-black text-sm rounded-md  block  px-2 focus:outline-none" />
+            </form>
+            <form action="">
+              <div className="py-1 px-2 sm:flex grid gap-2 justify-around">
+                <div className="flex justify-around sm:grid gap-2">
+                  <div className="flex items-center">
+                    <input
+                      id="F_creacion"
+                      type="radio"
+                      onClick={() => setFecha('F_creacion')}
+                      name="fecha"
+                      className="w-4 h-4"
+                      checked={fecha === 'F_creacion'} // Controla cuál radio está seleccionado
+                    />
+                    <label htmlFor="F_creacion" className="ml-2 text-sm font-medium">
+                      Fecha de creación
+                    </label>
                   </div>
                 </div>
-                <button className="flex justify-center items-center mx-auto ">
-                  <i className="bg-[#0087c8] h-[50px] w-[50px] flex justify-center items-center rounded-md text-white text-[1.2em] cursor-pointer fa-solid fa-magnifying-glass"></i>
-                </button>
 
+                <div className="grid gap-1 ml-2">
+                  <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
+                    <label htmlFor="registro-1" className="font-medium text-sm">Desde: </label>
+                    <input
+                      onChange={e => setFAtencionDesde(e.target.value)}
+                      id="registro-1"
+                      type="date"
+                      className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
+                    <label htmlFor="registro-1" className="font-medium text-sm">Hasta: </label>
+                    <input
+                      onChange={e => setFAtencionHasta(e.target.value)}
+                      id="registro-1"
+                      type="date"
+                      className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 pr-8 focus:outline-none"
+                    />
+                  </div>
+                </div>
               </div>
+            </form>
+
+          </section>
+
+          <form className="grid md:flex justify-evenly pt-2 gap-4">
+
+            <div className="flex gap-2 items-center justify-center ">
+              <label htmlFor="registro-1" className="font-medium text-sm">N° Registro</label>
+              {/* <div className="relative flex items-center"> */}
+              <input
+                id="registro-1"
+                type="number"
+                min={1}
+                value={nRegistro}
+
+                onChange={e => setNRegistro(e.target.value)}
+                className="py-1 select-none bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
+              />
+              {/* <div className="absolute w-[90%] left-0  bg-transparent h-full">
+
+            </div> */}
+              {/* </div> */}
+
             </div>
-
-          </div>
-        </div>
-
-        <div className="grid grid-cols-6 pt-2 gap-4">
-          <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
-            <label htmlFor="registro-1" className="font-medium text-sm">N° Registro</label>
-            <input
-              id="registro-1"
-              type="number"
-              className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
-            />
-          </div>
-          <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 items-center justify-center gap-2 lg:justify-end">
-            <label htmlFor="registro-2" className="font-medium text-sm">ID del Cliente</label>
-            <input
-              id="registro-2"
-              type="number"
-              className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
-            />
-          </div>
-          <div className="flex col-span-6 lg:col-span-2 items-center justify-center">
-            <label className="font-medium text-sm">
-              <i className="text-yellow-400 fa-solid fa-triangle-exclamation"></i> Actualmente hay <span className="text-[#0087c8]">1 cliente</span>
-            </label>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div className=' overflow-hidden'>
-      {/*  scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent */}
-      <div className=" relative overflow-x-auto shadow-md sm:rounded-lg lg:max-w-[83vw]" >
-        <table className="w-full text-sm text-left rtl:text-right text-black overflow-y-auto ">
-          <thead className="text-xs text-white uppercase  bg-[#0087c8]">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center ">
-                  <span className="sr-only">Edit</span>
-                </h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">N°</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">Usuario</h4>
-              </th>
-              <th scope="col" className="px-6 py-3" >
-                <h4 className="text-center">
-                  <div className="flex items-center justify-center">
-                    F.atencion
-                    <a ><svg onClick={() => setFAtencion(!fAtencion)} className="cursor-pointer w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                    </svg></a>
-                  </div>
-                </h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">Empresa</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px] mx-auto">Rubro</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">Status</h4>
-              </th>
-              <th scope="col" className="px-6 py-3 flex items-center gap-1">
-                <h4 className="text-center w-[100px]">Prioridad</h4>
-                <select
-                  id="countries"
-                  className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none"
-                  onChange={(e) => setFilterTiposDeClientes(e.target.value)}
-                >
-                  <option value="">Todos</option>
-                  <option value="Ninguno">Ninguno</option>
-                  <option value="Potenciales">Potenciales</option>
-                  <option value="Frecuentes">Frecuentes</option>
-                  <option value="Ocasionales">Ocasionales</option>
-                  <option value="Tercerizadores">Tercerizadores</option>
-                  <option value="Prospecto">Prospecto</option>
-                  <option value="No Potencial">No Potencial</option>
-                  <option value="Mal Cliente">Mal Cliente</option>
-                </select>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[200px]">Nombre</h4>
-              </th>
-              <th scope="col" className="px-6 py-3 ">
-                <h4 className="text-center w-[200px] mx-auto">Apellido</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Cargo</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">entel</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Telefono</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[50px]">RUC</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[50px]">Celular</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[50px]">RPC</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[50px]">RPM</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">E-Mail</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[200px]">Web</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[200px]">Dirección</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[200px]">Direccion de Empresa</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[200px]">Referencia</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">Distrito</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center">Ciudad</h4>
-              </th>
-              <th scope="col" className="px-6 py-3 flex items-center gap-1">
-                <h4 className="text-center w-[100px] ">Cumpleaños</h4>
-                <select
-                  id="countries"
-                  className="py-1 font-light bg-white border border-[#969696] text-black text-sm rounded-md block px-1 focus:outline-none"
-                  onChange={(e) => setCumpleaños(e.target.value)}
-                >
-                  <option selected value="">todos</option>
-                  <option value="Enero">Enero</option>
-                  <option value="Febrero">Febrero</option>
-                  <option value="Marzo">Marzo</option>
-                  <option value="Abril">Abril</option>
-                  <option value="Mayo">Mayo</option>
-                  <option value="Junio">Junio</option>
-                  <option value="Julio">Julio</option>
-                  <option value="Agosto">Agosto</option>
-                  <option value="Septiembre">Septiembre</option>
-                  <option value="Octubre">Octubre</option>
-                  <option value="Noviembre">Noviembre</option>
-                  <option value="Diciembre">Diciembre</option>
-                </select>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Pais</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Cumpleaños</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Aniversario</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Skype</h4>
-              </th>
-              <th scope="col" className="px-6 py-3">
-                <h4 className="text-center w-[100px]">Codigo</h4>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              charactersPaginated.map((cliente, index) => (
-                <tr key={index} className="bg-white border-b divide-x ">
-                  <td className="px-4 py-2 text-center gap-1 flex mt-1">
-                    <a href="#" className="font-medium py-1 w-[100px] text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
-                      <i className="fa-solid fa-pen-to-square"></i>Edit
-                    </a>
-                    <a href="#" className="font-medium py-1 w-[100px] text-white bg-[#cc2630] rounded flex justify-center items-center gap-1">
-                      <i className="fa-solid fa-lock"></i>Proteger
-                    </a>
-                  </td>
-                  <th scope="row" className="px-4 py-2 text-center font-medium text-black whitespace-nowrap min-w-[80px]">
-                    {cliente.id}
-                  </th>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Usuario || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.F_Atencion || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Empresa || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Rubro || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Status || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Prioridad || ' '}
-                  </td>
-
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Nombre || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Apellido || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Cargo || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.entel || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Telefono || ''}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.RUC || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Celular || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.RPC || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.RPM || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[200px]">
-                    {cliente.E_Mail || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[200px]">
-                    {cliente.Web || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[200px]">
-                    {cliente.Direccion || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[200px]">
-                    {cliente.Obs_Direccion_Empresa || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[200px]">
-                    {cliente.Referencia || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Distrito || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Ciudad || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Provincia || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Pais || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Cumpleaños || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Aniversario || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Skype || ' '}
-                  </td>
-                  <td className="px-4 py-2 text-center min-w-[150px]">
-                    {cliente.Codigo || ' '}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-
-        </table>
+            <div className="flex tems-center justify-center gap-2 lg:justify-end">
+              <label htmlFor="registro-2" className="font-medium text-sm">ID del Usuario</label>
+              <input
+                id="registro-2"
+                type="number"
+                onChange={e => setIdCliente(e.target.value)}
+                className="py-1 bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <label className="font-medium text-sm">
+                <i className="text-yellow-400 fa-solid fa-triangle-exclamation"></i> Actualmente hay <span className="text-[#0087c8]">{provedoresValor.length} Usuario</span>
+              </label>
+            </div>
+          </form>
+        </section>
       </div>
+      <div className=' overflow-hidden'>
+        {/*  scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent */}
+        <div className=" relative overflow-x-auto shadow-md sm:rounded-lg lg:max-w-[83vw]" >
+          <table className="w-full text-sm text-left rtl:text-right text-black overflow-y-auto ">
+            <thead className="text-xs text-white uppercase  bg-[#0087c8]">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center ">
+                    <span className="sr-only">Edit</span>
+                  </h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">N°</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Usuario</h4>
+                </th>
+                <th scope="col" className="px-6 py-3" >
+                  <h4 className="text-center">
+                    <div className="flex items-center justify-center">
+                      F_atencion
+                    </div>
+                  </h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Empresa</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Rubro</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Prioridad</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Cargo</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Entel</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Telefono</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Ruc</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Celular</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">RPC</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">RPM</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Correo</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Web</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center whitespace-nowrap">Direccion Empresa</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Referencia</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Pais</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Ciudad</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Distrito</h4>
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  <h4 className="text-center">Codigo</h4>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                charactersPaginated.map((Provedores, index) => (
+                  <tr key={index} className="bg-white border-b divide-x ">
+                    <td className="px-4 py-2 text-center gap-1 flex mt-1 justify-center">
+                      <button onClick={() => [serIdEdicion(Provedores.id), setIdPut('editarProvedores')]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
+                        <i className="fa-solid fa-pen-to-square"></i>Edit
+                      </button>
+                      <button onClick={()=>{dispatch(deleteThungProvedores(Provedores.id))}} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#cc2630] rounded flex justify-center items-center gap-1">
+                        <i className="fa-solid fa-trash-can"></i>Eliminar
+                      </button>
 
-    </div>
-    <div className="flex mt-2 p-2 justify-center">
-      <nav aria-label="" className="flex justify-center">
-        <ul className="inline-flex -space-x-px text-[1.1em] ">
-          <li>
-            <a
-              onClick={() => setPage(1)}
-              className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 ms-0 leading-tight rounded-l-lg border-r-2 border-white bg-[#0087c8] text-white hover:bg-[#3381a8]"
-            >
-              <i className="fa-solid fa-angles-left"></i>
-            </a>
-          </li>
-          {pagNumber.map((number) => (
-            <li key={number}>
+                    </td>
+                    <th scope="row" className="px-4 py-2 text-center font-medium text-black whitespace-nowrap ">
+                      {Provedores.id}
+                    </th>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Usuario || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.createdAt ? new Date(Provedores.F_atencion).toLocaleDateString() : ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Empresa || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Rubro || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Prioridad || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Cargo || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Entel || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Telefono || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Ruc || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Celular || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.RPC || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.RPM || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Correo || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Web || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Direccion_Empresa || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Deferencia || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Pais || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Ciudad || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Distrito || ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {Provedores.Codigo || ' '}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+      <div className="flex mt-2 p-2 justify-center">
+        <nav aria-label="" className="flex justify-center">
+          <ul className="inline-flex -space-x-px text-[1.1em] ">
+            <li>
               <a
-                onClick={() => setPage(number)}
-                className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 bg-[#0087c8] border-r-2 border-white  text-white hover:bg-[#3381a8]"
+                onClick={() => setPage(1)}
+                className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 ms-0 leading-tight rounded-l-lg border-r-2 border-white bg-[#0087c8] text-white hover:bg-[#3381a8]"
               >
-                {number}
+                <i className="fa-solid fa-angles-left"></i>
               </a>
             </li>
-          ))}
-          <li>
-            <a
-              onClick={() => setPage(totalPgaginas)}
-              className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 leading-tight bg-[#0087c8] text-white hover:bg-[#3381a8] rounded-e-lg "
-            >
-              <i className="fa-solid fa-angles-right"></i>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </main>
+            {pagNumber.map((number) => (
+              <li key={number}>
+                <a
+                  onClick={() => setPage(number)}
+                  className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 bg-[#0087c8] border-r-2 border-white  text-white hover:bg-[#3381a8]"
+                >
+                  {number}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                onClick={() => setPage(totalPgaginas)}
+                className="text-sm cursor-pointer flex items-center justify-center px-3 h-8 leading-tight bg-[#0087c8] text-white hover:bg-[#3381a8] rounded-e-lg "
+              >
+                <i className="fa-solid fa-angles-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+    </main>
   )
 }
 

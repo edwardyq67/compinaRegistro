@@ -3,7 +3,8 @@ import ejemploData from '../../ejemplo.json'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteClienteListarCliente, getClienteListarCliente } from '../../store/slices/clienteListarCliente';
 
-function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCliete, setAgregarClienteListarCliente }) {
+function ListarClientes({ setIdPut, serIdEdicion, setPost }) {
+
   const dispatch = useDispatch();
   const [nRegistro, setNRegistro] = useState(10)
   const [idClientes, setIdCliente] = useState('')
@@ -16,7 +17,7 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
   const [filterStatusAtencion, setFilterStatusAtencion] = useState('');
   const [cumpleaños, setCumpleaños] = useState('');
   const [page, setPage] = useState(1);
-  const [fAtencion, setFAtencion] = useState(true);
+  const [fecha, setFecha] = useState('F_atencion');
 
   const estadoLoading = useSelector((state) => state.clienteLitarCliente);
 
@@ -40,7 +41,23 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
     .filter(cumple => cumpleaños === '' || cumple.Cumpleaños.includes(cumpleaños))
     .filter(idClien => idClientes === '' || idClien.id === Number(idClientes))
     .filter(buscar => busqueda === '' || buscar[buscarPor].toLowerCase().includes(busqueda.toLowerCase()))
-    ;
+    .filter(cliente => {
+      if (fAtencionDesde === '' && fAtencionHasta === '') return true;
+  
+      let fechaCliente;
+  
+      if (fecha === 'F_atencion') {
+        fechaCliente = new Date(cliente.F_aviso); // Asegúrate de que "cliente.F_aviso" existe
+      } else {
+        fechaCliente = new Date(cliente.createdAt); // Asegúrate de que "cliente.createdAt" existe
+      }
+  
+      const inicio = fAtencionDesde !== '' ? new Date(fAtencionDesde) : new Date(fAtencionDesde); // Fecha muy antigua por defecto
+      const fin = fAtencionHasta !== '' ? new Date(fAtencionHasta) : new Date(fAtencionHasta); // Fecha muy futura por defecto
+  
+      return fechaCliente >= inicio && fechaCliente <= fin;
+    });
+
 
 
   const lidatos = nRegistro;
@@ -59,10 +76,10 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
   return (
     <main className="">
       <div className="flex mb-2 ">
-        <div className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y ">
-          <div className="grid lg:flex gap-2 divide-x-0 lg:divide-x">
+        <section className="grid rounded-md bg-white shadow-lg p-2 gap-2 divide-y ">
+          <section className="grid lg:flex gap-2 divide-x-0 lg:divide-x">
             <div className="flex items-center justify-center">
-              <button onClick={() => [setAgregarClienteListarCliente(true)]} className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
+              <button onClick={() => [setPost("verAgregarListaCliente")]} className="flex items-center py-1 px-2 rounded-md text-white gap-2 justify-center text-sm bg-[#0087c8]">
                 <i className="fa-solid fa-user-plus"></i>
                 <h3>Agragar Cliente</h3>
               </button>
@@ -104,32 +121,34 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
             <form action="">
               <div className="py-1 px-2 sm:flex grid gap-2 justify-around">
                 <div className="flex justify-around sm:grid gap-2">
-                  <div className="flex items-center ">
+                  <div className="flex items-center">
                     <input
                       id="default-radio-1"
                       type="radio"
-                      value=""
+                      onClick={() => setFecha('F_aviso')}
                       name="default-radio"
-                      className="w-4 h-4 "
+                      className="w-4 h-4"
+                      checked={fecha === 'F_aviso'} // Controla cuál radio está seleccionado
                     />
-                    <label htmlFor="default-radio-1" className="ml-2 text-sm font-medium ">
+                    <label htmlFor="default-radio-1" className="ml-2 text-sm font-medium">
                       Fecha de Aviso
                     </label>
                   </div>
                   <div className="flex items-center">
                     <input
-                      checked
                       id="default-radio-2"
                       type="radio"
-                      value=""
+                      onClick={() => setFecha('F_atencion')}
                       name="default-radio"
-                      className="w-4 h-4 "
+                      className="w-4 h-4"
+                      checked={fecha === 'F_atencion'} // Controla cuál radio está seleccionado
                     />
                     <label htmlFor="default-radio-2" className="ml-2 text-sm font-medium">
                       Fecha de Atencion
                     </label>
                   </div>
                 </div>
+
                 <div className="grid gap-1 ml-2">
                   <div className="flex col-span-6 sm:col-span-3 md:col-span-3 lg:col-span-2 gap-2 items-center justify-center lg:justify-end">
                     <label htmlFor="registro-1" className="font-medium text-sm">Desde: </label>
@@ -153,7 +172,7 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
               </div>
             </form>
 
-          </div>
+          </section>
 
           <form className="grid md:flex justify-evenly pt-2 gap-4">
 
@@ -169,11 +188,6 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
                 onChange={e => setNRegistro(e.target.value)}
                 className="py-1 select-none bg-white border border-[#969696] text-black text-sm rounded-md block px-2 focus:outline-none"
               />
-              {/* <div className="absolute w-[90%] left-0  bg-transparent h-full">
-
-              </div> */}
-              {/* </div> */}
-
             </div>
             <div className="flex tems-center justify-center gap-2 lg:justify-end">
               <label htmlFor="registro-2" className="font-medium text-sm">ID del Cliente</label>
@@ -190,7 +204,7 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
               </label>
             </div>
           </form>
-        </div>
+        </section>
       </div>
       <div className=' overflow-hidden'>
         {/*  scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent */}
@@ -213,9 +227,13 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
                   <h4 className="text-center">
                     <div className="flex items-center justify-center">
                       F.atencion
-                      <a ><svg onClick={() => setFAtencion(!fAtencion)} className="cursor-pointer w-3 h-3 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                      </svg></a>
+                    </div>
+                  </h4>
+                </th>
+                <th scope="col" className="px-6 py-3" >
+                  <h4 className="text-center">
+                    <div className="flex items-center justify-center">
+                      F.Aviso
                     </div>
                   </h4>
                 </th>
@@ -343,11 +361,8 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
                 charactersPaginated.map((cliente, index) => (
                   <tr key={index} className="bg-white border-b divide-x ">
                     <td className="px-4 py-2 text-center gap-1 flex mt-1">
-                      <button onClick={() => [setidClienteListarCliete(cliente.id), setidActivarClienteListarCliete(true)]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
+                      <button onClick={() => [serIdEdicion(cliente.id), setIdPut('editarListarClietne')]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#0087c8] rounded flex justify-center items-center gap-1">
                         <i className="fa-solid fa-pen-to-square"></i>Edit
-                      </button>
-                      <button className="px-2 font-medium py-1 whitespace-nowrap text-white bg-black rounded flex justify-center items-center gap-1">
-                        <i className="fa-solid fa-shield-halved"></i>Proteger
                       </button>
                       <button onClick={() => [dispatch(deleteClienteListarCliente(cliente.id))]} className="px-2 font-medium py-1 whitespace-nowrap text-white bg-[#cc2630] rounded flex justify-center items-center gap-1">
                         <i className="fa-solid fa-trash-can"></i>Eliminar
@@ -362,6 +377,9 @@ function ListarClientes({ setidActivarClienteListarCliete, setidClienteListarCli
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
                       {cliente.updatedAt ? new Date(cliente.updatedAt).toLocaleDateString() : ' '}
+                    </td>
+                    <td className="px-4 py-2 text-center whitespace-nowrap">
+                      {cliente.F_aviso ? new Date(cliente.F_aviso).toLocaleDateString() : ' '}
                     </td>
                     <td className="px-4 py-2 text-center whitespace-nowrap">
                       {cliente.Razon_Comercial || ' '}
